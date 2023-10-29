@@ -1,13 +1,14 @@
 package zerobase.dividend.web;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import zerobase.dividend.model.Company;
 import zerobase.dividend.service.CompanyService;
+import zerobase.dividend.web.dto.AddCompanyRequest;
 
 import java.util.List;
 
@@ -29,20 +30,16 @@ public class CompanyController {
     }
 
     @PostMapping
-    public ResponseEntity<Company> addCompany(@RequestBody Company request) {
+    public ResponseEntity<Company> addCompany(
+            @RequestBody @Valid AddCompanyRequest request) {
         String ticker = request.ticker().trim();
-        if (ObjectUtils.isEmpty(ticker)) {
-            // todo 에러처리
-            throw new RuntimeException("ticker is empty");
-        }
-
         Company company = companyService.save(ticker);
-        companyService.addAutocompleteKeyword(company.name());
         return ResponseEntity.ok(company);
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> deleteCompany() {
-        return null;
+    @DeleteMapping("/{ticker}")
+    public ResponseEntity<Void> deleteCompany(@PathVariable String ticker) {
+        companyService.deleteCompanyByTicker(ticker);
+        return ResponseEntity.ok().build();
     }
 }
