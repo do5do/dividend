@@ -7,7 +7,10 @@ import java.util.List;
 public record Auth() {
 
     public record SignIn(
+            @NotBlank
             String username,
+
+            @NotBlank
             String password) {
 
     }
