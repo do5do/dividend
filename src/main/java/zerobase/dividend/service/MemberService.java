@@ -40,7 +40,8 @@ public class MemberService implements UserDetailsService {
 
         signUp.roles().stream()
                 .map(Authority::match)
-                .forEach(o -> memberEntity.addMemberRole(MemberRoleEntity.of(o)));
+                .forEach(o -> memberEntity.addMemberRoleEntity(
+                        MemberRoleEntity.of(o)));
 
         MemberEntity savedMember = memberRepository.save(memberEntity);
         return Member.fromEntity(savedMember);
@@ -52,7 +53,7 @@ public class MemberService implements UserDetailsService {
                         .orElseThrow(
                                 () -> new RuntimeException(
                                         "username does not exist. -> "
-                                        + signIn.username()));
+                                                + signIn.username()));
 
         boolean matches = passwordEncoder.matches(signIn.password(),
                 memberEntity.getPassword());

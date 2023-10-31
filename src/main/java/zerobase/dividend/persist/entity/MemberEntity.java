@@ -36,7 +36,7 @@ public class MemberEntity implements UserDetails {
         return new MemberEntity(username, password);
     }
 
-    public void addMemberRole(MemberRoleEntity memberRoleEntity) {
+    public void addMemberRoleEntity(MemberRoleEntity memberRoleEntity) {
         roles.add(memberRoleEntity);
         memberRoleEntity.setMemberEntity(this);
     }

@@ -21,7 +21,7 @@ public class MemberRoleEntity {
     @JoinColumn(name = "member_id")
     private MemberEntity memberEntity;
 
-    public MemberRoleEntity(Authority role) {
+    private MemberRoleEntity(Authority role) {
         this.role = role;
     }
 

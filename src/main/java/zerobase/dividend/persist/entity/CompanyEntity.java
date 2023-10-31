@@ -33,7 +33,7 @@ public class CompanyEntity {
         return new CompanyEntity(company.ticker(), company.name());
     }
 
-    public void addDividends(DividendEntity dividendEntity) {
+    public void addDividendEntity(DividendEntity dividendEntity) {
         this.dividends.add(dividendEntity);
         dividendEntity.setCompanyEntity(this);
     }

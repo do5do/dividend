@@ -50,7 +50,7 @@ public class CompanyService {
 
         CompanyEntity companyEntity = CompanyEntity.of(company);
         scrapedResult.dividends().forEach(o ->
-            companyEntity.addDividends(DividendEntity.of(o)));
+            companyEntity.addDividendEntity(DividendEntity.of(o)));
 
         // todo dividend bulk insert
         companyRepository.save(companyEntity);
