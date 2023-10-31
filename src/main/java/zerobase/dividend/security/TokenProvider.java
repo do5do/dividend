@@ -19,6 +19,7 @@ import zerobase.dividend.service.MemberService;
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Component
@@ -38,19 +39,19 @@ public class TokenProvider {
     }
 
     public String generateToken(String username, List<MemberRole> memberRoles) {
-        Claims claims = Jwts.claims()
-                .subject(username)
-                .build();
-        claims.put(KEY_ROLES, memberRoles);
+        String authorities = memberRoles.stream()
+                .map(o -> o.role().getKey())
+                .collect(Collectors.joining(","));
 
         Date now = new Date();
         Date expiredDate = new Date(now.getTime() + TOKEN_EXPIRE_TIME);
 
         return Jwts.builder()
-                .claims(claims)
+                .subject(username)
+                .claim(KEY_ROLES, authorities)
                 .issuedAt(now)
                 .expiration(expiredDate)
-                .signWith(key)
+                .signWith(key, Jwts.SIG.HS256)
                 .compact();
     }
 
@@ -76,7 +77,7 @@ public class TokenProvider {
 
     private Claims parseClaims(String token) {
         try {
-            return Jwts.parser().decryptWith(key).build()
+            return Jwts.parser().verifyWith(key).build()
                     .parseSignedClaims(token).getPayload();
         } catch (ExpiredJwtException e) {
             return e.getClaims();

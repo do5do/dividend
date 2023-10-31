@@ -20,35 +20,35 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 @Configuration
 public class SecurityConfiguration {
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationFilter jwtFilter;
+    private final CustomAuthenticationEntryPoint entryPoint;
+    private final CustomAccessDeniedHandler deniedHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
-                .headers(c -> c.frameOptions(HeadersConfigurer
-                        .FrameOptionsConfig::disable).disable())
+                .headers(c -> c
+                        .frameOptions(HeadersConfigurer
+                                .FrameOptionsConfig::disable).disable())
+                .sessionManagement(c -> c
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests((request) -> request
                         .requestMatchers(
-                                new AntPathRequestMatcher("/"),
                                 new AntPathRequestMatcher("/h2-console/**"),
-                                new AntPathRequestMatcher("/auth/signup"),
-                                new AntPathRequestMatcher("/auth/signin")
+                                new AntPathRequestMatcher("/**/signup"),
+                                new AntPathRequestMatcher("/**/signin")
                         )
                         .permitAll()
                         .anyRequest().authenticated())
 
-                .sessionManagement(c ->
-                        c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(c -> c
+                        .authenticationEntryPoint(entryPoint)
+                        .accessDeniedHandler(deniedHandler))
 
-                .exceptionHandling(c ->
-                        c.authenticationEntryPoint(new CustomAuthenticationEntryPoint())
-                                .accessDeniedHandler(new CustomAccessDeniedHandler()))
-
-                .addFilterBefore(jwtAuthenticationFilter,
-                        UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

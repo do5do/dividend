@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
-public record Auth() {
+public record AuthRequest() {
 
     public record SignIn(
             @NotBlank

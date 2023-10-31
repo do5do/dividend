@@ -7,14 +7,19 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import zerobase.dividend.exception.impl.AlreadyExistUserException;
+import zerobase.dividend.exception.impl.NoUserException;
+import zerobase.dividend.exception.impl.UnMatchedPassword;
 import zerobase.dividend.model.Member;
 import zerobase.dividend.model.constant.Authority;
 import zerobase.dividend.persist.MemberRepository;
 import zerobase.dividend.persist.entity.MemberEntity;
 import zerobase.dividend.persist.entity.MemberRoleEntity;
-import zerobase.dividend.web.dto.Auth;
+import zerobase.dividend.web.dto.AuthRequest;
 
 @Slf4j
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
 public class MemberService implements UserDetailsService {
@@ -24,15 +29,16 @@ public class MemberService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException {
-        return memberRepository.findByUsername(username)
+        return memberRepository.findByUsernameFetchJoin(username)
                 .orElseThrow(() ->
                         new UsernameNotFoundException(
                                 "couldn't find user. -> " + username));
     }
 
-    public Member register(Auth.SignUp signUp) {
+    @Transactional
+    public Member register(AuthRequest.SignUp signUp) {
         if (memberRepository.existsByUsername(signUp.username())) {
-            throw new RuntimeException("username is already in use.");
+            throw new AlreadyExistUserException();
         }
 
         String encodedPw = passwordEncoder.encode(signUp.password());
@@ -47,18 +53,18 @@ public class MemberService implements UserDetailsService {
         return Member.fromEntity(savedMember);
     }
 
-    public Member authenticate(Auth.SignIn signIn) {
+    public Member authenticate(AuthRequest.SignIn signIn) {
+        // fetch join으로 롤을 같이 가져와야 한다.
+
         MemberEntity memberEntity =
-                memberRepository.findByUsername(signIn.username())
+                memberRepository.findByUsernameFetchJoin(signIn.username())
                         .orElseThrow(
-                                () -> new RuntimeException(
-                                        "username does not exist. -> "
-                                                + signIn.username()));
+                                () -> new NoUserException());
 
         boolean matches = passwordEncoder.matches(signIn.password(),
                 memberEntity.getPassword());
         if (!matches) {
-            throw new RuntimeException("password do not match.");
+            throw new UnMatchedPassword();
         }
 
         return Member.fromEntity(memberEntity);

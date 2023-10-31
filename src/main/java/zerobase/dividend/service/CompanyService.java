@@ -2,16 +2,17 @@ package zerobase.dividend.service;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.Trie;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import zerobase.dividend.exception.impl.AlreadyExistsTickerException;
+import zerobase.dividend.exception.impl.FailToScrapTickerException;
+import zerobase.dividend.exception.impl.NoCompanyException;
 import zerobase.dividend.model.Company;
 import zerobase.dividend.model.ScrapedResult;
-import zerobase.dividend.model.constant.CacheKey;
 import zerobase.dividend.persist.CompanyRepository;
 import zerobase.dividend.persist.entity.CompanyEntity;
 import zerobase.dividend.persist.entity.DividendEntity;
@@ -30,7 +31,7 @@ public class CompanyService {
     @Transactional
     public Company save(String ticker) {
         if (companyRepository.existsByTicker(ticker)) {
-            throw new RuntimeException("already exists ticker -> " + ticker);
+            throw new AlreadyExistsTickerException();
         }
         return storeCompanyAndDividend(ticker);
     }
@@ -43,7 +44,7 @@ public class CompanyService {
     private Company storeCompanyAndDividend(String ticker) {
         Company company = yahooFinanceScraper.scrapCompanyByTicker(ticker);
         if (ObjectUtils.isEmpty(company)) {
-            throw new RuntimeException("failed to scrap ticker -> " + ticker);
+            throw new FailToScrapTickerException();
         }
 
         ScrapedResult scrapedResult = yahooFinanceScraper.scrap(company);
@@ -52,7 +53,6 @@ public class CompanyService {
         scrapedResult.dividends().forEach(o ->
             companyEntity.addDividendEntity(DividendEntity.of(o)));
 
-        // todo dividend bulk insert
         companyRepository.save(companyEntity);
         return company;
     }
@@ -84,14 +84,12 @@ public class CompanyService {
         trie.remove(keyword);
     }
 
-    @CacheEvict(value = CacheKey.KEY_FINANCE, key = "#ticker") // todo test 필요
     @Transactional
-    public void deleteCompanyByTicker(String ticker) {
+    public String deleteCompanyByTicker(String ticker) {
         CompanyEntity companyEntity = companyRepository.findByTicker(ticker)
-                .orElseThrow(() ->
-                        new RuntimeException("No company exists for that ticker. -> " + ticker));
+                .orElseThrow(() -> new NoCompanyException());
 
-        // todo 연관관계까지 모두 삭제 -> 근데 쿼리가 따로 날아감.. 조회해서 지우는게 나을 듯
         companyRepository.delete(companyEntity);
+        return companyEntity.getName();
     }
 }

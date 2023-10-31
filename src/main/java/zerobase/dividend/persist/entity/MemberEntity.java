@@ -24,7 +24,8 @@ public class MemberEntity implements UserDetails {
 
     private String password;
 
-    @OneToMany(mappedBy = "memberEntity", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "memberEntity", cascade = CascadeType.ALL,
+            orphanRemoval = true)
     private List<MemberRoleEntity> roles = new ArrayList<>();
 
     private MemberEntity(String username, String password) {
@@ -44,7 +45,7 @@ public class MemberEntity implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
-                .map(o -> new SimpleGrantedAuthority(o.getRole().name()))
+                .map(o -> new SimpleGrantedAuthority(o.getRole().getKey()))
                 .toList();
     }
 

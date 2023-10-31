@@ -6,6 +6,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
+import zerobase.dividend.exception.impl.InvalidTickerException;
 import zerobase.dividend.model.Company;
 import zerobase.dividend.model.Dividend;
 import zerobase.dividend.model.ScrapedResult;
@@ -59,7 +60,6 @@ public class YahooFinanceScraper implements Scraper {
 
             return new ScrapedResult(company, dividends);
         } catch (IOException e) {
-            // todo 예외처리
             throw new RuntimeException(e);
         }
     }
@@ -72,7 +72,7 @@ public class YahooFinanceScraper implements Scraper {
             Document document = Jsoup.connect(url).get();
             Elements h2 = document.getElementsByTag("h1");
             if (h2.isEmpty()) {
-                throw new RuntimeException("올바르지 않은 ticker");
+                throw new InvalidTickerException();
             }
 
             String name = h2.get(0).text()
@@ -80,9 +80,7 @@ public class YahooFinanceScraper implements Scraper {
 
             return new Company(ticker, name);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        // todo 예외처리
-        return null;
     }
 }
