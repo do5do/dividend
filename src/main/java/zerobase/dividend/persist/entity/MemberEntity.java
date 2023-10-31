@@ -25,7 +25,7 @@ public class MemberEntity implements UserDetails {
     private String password;
 
     @OneToMany(mappedBy = "memberEntity", cascade = CascadeType.ALL)
-    private List<MemberRole> roles = new ArrayList<>();
+    private List<MemberRoleEntity> roles = new ArrayList<>();
 
     private MemberEntity(String username, String password) {
         this.username = username;
@@ -36,9 +36,9 @@ public class MemberEntity implements UserDetails {
         return new MemberEntity(username, password);
     }
 
-    public void addMemberRole(MemberRole memberRole) {
-        roles.add(memberRole);
-        memberRole.setMemberEntity(this);
+    public void addMemberRole(MemberRoleEntity memberRoleEntity) {
+        roles.add(memberRoleEntity);
+        memberRoleEntity.setMemberEntity(this);
     }
 
     @Override

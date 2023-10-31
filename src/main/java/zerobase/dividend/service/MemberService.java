@@ -11,7 +11,7 @@ import zerobase.dividend.model.Member;
 import zerobase.dividend.model.constant.Authority;
 import zerobase.dividend.persist.MemberRepository;
 import zerobase.dividend.persist.entity.MemberEntity;
-import zerobase.dividend.persist.entity.MemberRole;
+import zerobase.dividend.persist.entity.MemberRoleEntity;
 import zerobase.dividend.web.dto.Auth;
 
 @Slf4j
@@ -40,7 +40,7 @@ public class MemberService implements UserDetailsService {
 
         signUp.roles().stream()
                 .map(Authority::match)
-                .forEach(o -> memberEntity.addMemberRole(MemberRole.of(o)));
+                .forEach(o -> memberEntity.addMemberRole(MemberRoleEntity.of(o)));
 
         MemberEntity savedMember = memberRepository.save(memberEntity);
         return Member.fromEntity(savedMember);

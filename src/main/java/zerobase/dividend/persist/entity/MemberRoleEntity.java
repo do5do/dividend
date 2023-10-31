@@ -8,8 +8,8 @@ import zerobase.dividend.model.constant.Authority;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Entity
-public class MemberRole {
+@Entity(name = "member_role")
+public class MemberRoleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,12 +21,12 @@ public class MemberRole {
     @JoinColumn(name = "member_id")
     private MemberEntity memberEntity;
 
-    public MemberRole(Authority role) {
+    public MemberRoleEntity(Authority role) {
         this.role = role;
     }
 
-    public static MemberRole of(Authority role) {
-        return new MemberRole(role);
+    public static MemberRoleEntity of(Authority role) {
+        return new MemberRoleEntity(role);
     }
 
     public void setMemberEntity(MemberEntity memberEntity) {

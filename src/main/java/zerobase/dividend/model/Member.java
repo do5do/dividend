@@ -7,11 +7,11 @@ import java.util.List;
 public record Member(
         String username,
         String password,
-        List<Role> roles) {
+        List<MemberRole> memberRoles) {
 
     public static Member fromEntity(MemberEntity memberEntity) {
         return new Member(memberEntity.getUsername(),
                 memberEntity.getPassword(),
-                Role.toListFromEntity(memberEntity.getRoles()));
+                MemberRole.toListFromEntity(memberEntity.getRoles()));
     }
 }

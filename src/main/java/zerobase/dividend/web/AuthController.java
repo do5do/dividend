@@ -28,6 +28,6 @@ public class AuthController {
     public ResponseEntity<String> signin(@RequestBody @Valid Auth.SignIn request) {
         Member member = memberService.authenticate(request);
         return ResponseEntity.ok(tokenProvider.generateToken(
-                member.username(), member.roles()));
+                member.username(), member.memberRoles()));
     }
 }

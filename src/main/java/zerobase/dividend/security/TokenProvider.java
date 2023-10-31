@@ -13,7 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import zerobase.dividend.model.Role;
+import zerobase.dividend.model.MemberRole;
 import zerobase.dividend.service.MemberService;
 
 import javax.crypto.SecretKey;
@@ -37,11 +37,11 @@ public class TokenProvider {
         key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(String username, List<Role> roles) {
+    public String generateToken(String username, List<MemberRole> memberRoles) {
         Claims claims = Jwts.claims()
                 .subject(username)
                 .build();
-        claims.put(KEY_ROLES, roles);
+        claims.put(KEY_ROLES, memberRoles);
 
         Date now = new Date();
         Date expiredDate = new Date(now.getTime() + TOKEN_EXPIRE_TIME);
