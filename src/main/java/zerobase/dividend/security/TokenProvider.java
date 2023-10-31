@@ -55,10 +55,10 @@ public class TokenProvider {
                 .compact();
     }
 
-    public Authentication getAuthentication(String jwt) {
+    public Authentication getAuthentication(String token) {
         UserDetails userDetails =
-                memberService.loadUserByUsername(getUsername(jwt));
-        return new UsernamePasswordAuthenticationToken(userDetails,
+                memberService.loadUserByUsername(getUsername(token));
+        return new UsernamePasswordAuthenticationToken(userDetails, token,
                 userDetails.getAuthorities());
     }
 

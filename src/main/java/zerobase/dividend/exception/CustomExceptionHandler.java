@@ -21,6 +21,7 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<?> handleException(Exception e) {
+        log.error("exception occurred. ", e);
         ErrorResponse errorResponse =
                 new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                         "예상치 못한 에러가 발생하였습니다.");

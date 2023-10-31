@@ -6,14 +6,14 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum Authority {
-    ROLE_READ("READ"),
-    ROLE_WRITE("WRITE");
+    READ("ROLE_READ"),
+    WRITE("ROLE_WRITE");
 
     private final String key;
 
     public static Authority match(String s) {
         for (Authority authority : Authority.values()) {
-            if (authority.name().equals(s)) {
+            if (authority.getKey().equals(s)) {
                 return authority;
             }
         }

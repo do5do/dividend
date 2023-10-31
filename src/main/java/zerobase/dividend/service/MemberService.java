@@ -54,16 +54,13 @@ public class MemberService implements UserDetailsService {
     }
 
     public Member authenticate(AuthRequest.SignIn signIn) {
-        // fetch join으로 롤을 같이 가져와야 한다.
-
         MemberEntity memberEntity =
                 memberRepository.findByUsernameFetchJoin(signIn.username())
                         .orElseThrow(
                                 () -> new NoUserException());
 
-        boolean matches = passwordEncoder.matches(signIn.password(),
-                memberEntity.getPassword());
-        if (!matches) {
+        if (!passwordEncoder.matches(signIn.password(),
+                memberEntity.getPassword())) {
             throw new UnMatchPassword();
         }
 
