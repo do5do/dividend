@@ -87,7 +87,7 @@ public class CompanyService {
     @Transactional
     public String deleteCompanyByTicker(String ticker) {
         CompanyEntity companyEntity = companyRepository.findByTicker(ticker)
-                .orElseThrow(() -> new NoCompanyException());
+                .orElseThrow(NoCompanyException::new);
 
         companyRepository.delete(companyEntity);
         return companyEntity.getName();

@@ -9,8 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
-    Optional<MemberEntity> findByUsername(String username);
-
     @Query("select m from member m left join fetch m.roles")
     Optional<MemberEntity> findByUsernameFetchJoin(String username);
 

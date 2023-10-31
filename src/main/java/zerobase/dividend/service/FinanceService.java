@@ -25,7 +25,7 @@ public class FinanceService {
     @Cacheable(key = "#companyName", value = CacheKey.KEY_FINANCE)
     public ScrapedResult getDividendByCompanyName(String companyName) {
         CompanyEntity companyEntity = companyRepository.findByName(companyName)
-                .orElseThrow(() -> new NoCompanyException());
+                .orElseThrow(NoCompanyException::new);
 
         List<Dividend> dividends =
                 dividendRepository.findAllByCompanyEntity(companyEntity)

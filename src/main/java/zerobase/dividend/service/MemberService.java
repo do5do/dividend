@@ -56,8 +56,7 @@ public class MemberService implements UserDetailsService {
     public Member authenticate(AuthRequest.SignIn signIn) {
         MemberEntity memberEntity =
                 memberRepository.findByUsernameFetchJoin(signIn.username())
-                        .orElseThrow(
-                                () -> new NoUserException());
+                        .orElseThrow(NoUserException::new);
 
         if (!passwordEncoder.matches(signIn.password(),
                 memberEntity.getPassword())) {
