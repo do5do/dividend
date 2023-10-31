@@ -2,6 +2,7 @@ package zerobase.dividend.service;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.Trie;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import zerobase.dividend.model.Company;
 import zerobase.dividend.model.ScrapedResult;
+import zerobase.dividend.model.constant.CacheKey;
 import zerobase.dividend.persist.CompanyRepository;
 import zerobase.dividend.persist.entity.CompanyEntity;
 import zerobase.dividend.persist.entity.DividendEntity;
@@ -63,27 +65,33 @@ public class CompanyService {
                 .toList();
     }
 
-    public void addAutocompleteKeyword(String keyword) { // controller, company 추가 시 호출 (addCompany)
+    // controller, company 추가 시 호출 (addCompany)
+    public void addAutocompleteKeyword(String keyword) {
         trie.put(keyword, null);
     }
 
-    public List<String> autocomplete(String keyword) { // controller, autocomplete 에서 호출
+    // controller, autocomplete 에서 호출
+    public List<String> autocomplete(String keyword) {
         return trie.prefixMap(keyword).keySet()
                 .stream()
-                .limit(10) // keyword를 입력하지 않은 경우 모든 리스트를 조회하는데, 데이터가 많아지면 limit을 거는게 좋다.
+                // keyword를 입력하지 않은 경우 모든 리스트를 조회하는데, 데이터가 많아지면 limit을 거는게 좋다.
+                .limit(10)
                 .toList();
     }
 
-    public void deleteAutocompleteKeyword(String keyword) { // company 삭제 시 호출
+    // company 삭제 시 호출
+    public void deleteAutocompleteKeyword(String keyword) {
         trie.remove(keyword);
     }
 
+    @CacheEvict(value = CacheKey.KEY_FINANCE, key = "#ticker") // todo test 필요
     @Transactional
     public void deleteCompanyByTicker(String ticker) {
         CompanyEntity companyEntity = companyRepository.findByTicker(ticker)
                 .orElseThrow(() ->
                         new RuntimeException("No company exists for that ticker. -> " + ticker));
 
-        companyRepository.delete(companyEntity); // 연관관계까지 모두 삭제 -> 근데 쿼리가 따로 날아감.. 조회해서 지우는게 나을 듯
+        // todo 연관관계까지 모두 삭제 -> 근데 쿼리가 따로 날아감.. 조회해서 지우는게 나을 듯
+        companyRepository.delete(companyEntity);
     }
 }

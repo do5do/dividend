@@ -24,15 +24,15 @@ public class ScraperScheduler {
     private final Scraper yahooFinanceScraper;
     private final DividendRepository dividendRepository;
 
-    @CacheEvict(value = CacheKey.KEY_FINANCE, allEntries = true) // 캐시 삭제
+    @CacheEvict(value = CacheKey.KEY_FINANCE, allEntries = true) // 모든 캐시 삭제
     @Scheduled(cron = "${scheduler.scrap.yahoo}")
-    public void yahooFinanceScheduling() { // 이러한 메소드는 spring batch를 사용하는게 좋다.
+    public void yahooFinanceScheduling() { // 이러한 기능의 메소드는 spring batch를 사용하는게 좋다.
         List<CompanyEntity> companies = companyRepository.findAll();
 
-        for (CompanyEntity company : companies) {
-            log.info("scraping scheduler is started -> {}", company.getName());
+        for (CompanyEntity companyEntity : companies) {
+            log.info("scraping scheduler is started -> {}", companyEntity.getName());
             ScrapedResult scrapedResult = yahooFinanceScraper.scrap(
-                    Company.fromEntity(company));
+                    Company.fromEntity(companyEntity));
 
             scrapedResult.dividends().stream()
                     .map(DividendEntity::of)
