@@ -21,8 +21,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtFilter;
-    private final CustomAuthenticationEntryPoint entryPoint;
-    private final CustomAccessDeniedHandler deniedHandler;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -37,6 +37,7 @@ public class SecurityConfiguration {
 
                 .authorizeHttpRequests((request) -> request
                         .requestMatchers(
+                                new AntPathRequestMatcher("/error"),
                                 new AntPathRequestMatcher("/h2-console/**"),
                                 new AntPathRequestMatcher("/**/signup"),
                                 new AntPathRequestMatcher("/**/signin")
@@ -45,8 +46,8 @@ public class SecurityConfiguration {
                         .anyRequest().authenticated())
 
                 .exceptionHandling(c -> c
-                        .authenticationEntryPoint(entryPoint)
-                        .accessDeniedHandler(deniedHandler))
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler))
 
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

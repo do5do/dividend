@@ -1,11 +1,14 @@
 package zerobase.dividend.scraper;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
+import zerobase.dividend.exception.impl.FailToScrapCompanyException;
+import zerobase.dividend.exception.impl.FailToScrapTickerException;
 import zerobase.dividend.exception.impl.InvalidTickerException;
 import zerobase.dividend.model.Company;
 import zerobase.dividend.model.Dividend;
@@ -17,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Component
 public class YahooFinanceScraper implements Scraper {
     private static final String URL = "https://finance.yahoo.com/quote/%s/history?period1=%d&period2=%d&interval=1mo";
@@ -50,7 +54,8 @@ public class YahooFinanceScraper implements Scraper {
                 String dividend = split[3];
 
                 if (month < 0) {
-                    throw new RuntimeException("Unexpected Month enum value ->" + split[0]);
+                    log.error("Unexpected Month enum value -> {}", split[0]);
+                    throw new FailToScrapCompanyException();
                 }
 
                 dividends.add(new Dividend(
@@ -60,7 +65,8 @@ public class YahooFinanceScraper implements Scraper {
 
             return new ScrapedResult(company, dividends);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error("scrap company failed -> ", e);
+            throw new FailToScrapCompanyException();
         }
     }
 
@@ -80,7 +86,8 @@ public class YahooFinanceScraper implements Scraper {
 
             return new Company(ticker, name);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error("scrap ticker failed -> {}", ticker, e);
+            throw new FailToScrapTickerException();
         }
     }
 }

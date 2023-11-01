@@ -2,6 +2,7 @@ package zerobase.dividend.web;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Objects;
 
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/company")
@@ -56,5 +58,6 @@ public class CompanyController {
     public void clearFinanceCache(String companyName) {
         Objects.requireNonNull(redisCacheManager.getCache(CacheKey.KEY_FINANCE))
                 .evict(companyName);
+        log.info("{} cache removed", CacheKey.KEY_FINANCE);
     }
 }
