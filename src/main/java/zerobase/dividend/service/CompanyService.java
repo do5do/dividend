@@ -74,7 +74,6 @@ public class CompanyService {
     public List<String> autocomplete(String keyword) {
         return trie.prefixMap(keyword).keySet()
                 .stream()
-                // keyword를 입력하지 않은 경우 모든 리스트를 조회하는데, 데이터가 많아지면 limit을 거는게 좋다.
                 .limit(10)
                 .toList();
     }

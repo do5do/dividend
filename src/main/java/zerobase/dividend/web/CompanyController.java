@@ -38,7 +38,7 @@ public class CompanyController {
         return ResponseEntity.ok(companyService.getAllCompany(pageable));
     }
 
-    @PreAuthorize("hasRole('WRITE')") // spring security 메소드 단위 권한 설정
+    @PreAuthorize("hasRole('WRITE')")
     @PostMapping
     public ResponseEntity<Company> addCompany(
             @RequestBody @Valid AddCompanyRequest request) {
