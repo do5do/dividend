@@ -13,7 +13,7 @@ import zerobase.dividend.exception.impl.FailToScrapTickerException;
 import zerobase.dividend.exception.impl.NoCompanyException;
 import zerobase.dividend.model.Company;
 import zerobase.dividend.model.ScrapedResult;
-import zerobase.dividend.persist.CompanyRepository;
+import zerobase.dividend.persist.repository.CompanyRepository;
 import zerobase.dividend.persist.entity.CompanyEntity;
 import zerobase.dividend.persist.entity.DividendEntity;
 import zerobase.dividend.scraper.Scraper;

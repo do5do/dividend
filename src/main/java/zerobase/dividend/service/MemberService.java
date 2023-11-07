@@ -13,7 +13,7 @@ import zerobase.dividend.exception.impl.NoUserException;
 import zerobase.dividend.exception.impl.UnMatchPassword;
 import zerobase.dividend.model.Member;
 import zerobase.dividend.model.constant.Authority;
-import zerobase.dividend.persist.MemberRepository;
+import zerobase.dividend.persist.repository.MemberRepository;
 import zerobase.dividend.persist.entity.MemberEntity;
 import zerobase.dividend.persist.entity.MemberRoleEntity;
 import zerobase.dividend.web.dto.AuthRequest;

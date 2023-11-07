@@ -1,4 +1,4 @@
-package zerobase.dividend.persist;
+package zerobase.dividend.persist.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

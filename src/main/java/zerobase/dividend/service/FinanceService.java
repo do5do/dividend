@@ -9,8 +9,8 @@ import zerobase.dividend.model.Company;
 import zerobase.dividend.model.Dividend;
 import zerobase.dividend.model.ScrapedResult;
 import zerobase.dividend.model.constant.CacheKey;
-import zerobase.dividend.persist.CompanyRepository;
-import zerobase.dividend.persist.DividendRepository;
+import zerobase.dividend.persist.repository.CompanyRepository;
+import zerobase.dividend.persist.repository.DividendRepository;
 import zerobase.dividend.persist.entity.CompanyEntity;
 
 import java.util.List;

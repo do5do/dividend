@@ -1,4 +1,4 @@
-package zerobase.dividend.web;
+package zerobase.dividend.web.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
