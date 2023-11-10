@@ -55,7 +55,7 @@ public class CompanyController {
         return ResponseEntity.ok().build();
     }
 
-    public void clearFinanceCache(String companyName) {
+    private void clearFinanceCache(String companyName) {
         Objects.requireNonNull(redisCacheManager.getCache(CacheKey.KEY_FINANCE))
                 .evict(companyName);
         log.info("{} cache removed", CacheKey.KEY_FINANCE);

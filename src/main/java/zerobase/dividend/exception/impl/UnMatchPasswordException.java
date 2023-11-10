@@ -3,7 +3,7 @@ package zerobase.dividend.exception.impl;
 import org.springframework.http.HttpStatus;
 import zerobase.dividend.exception.AbstractException;
 
-public class UnMatchPassword extends AbstractException {
+public class UnMatchPasswordException extends AbstractException {
     @Override
     public int getStatusCode() {
         return HttpStatus.BAD_REQUEST.value();

@@ -38,30 +38,14 @@ public class YahooFinanceScraper implements Scraper {
 
             Elements parsingDivs = document.getElementsByAttributeValue("data-test", "historical-prices");
             Element tableEle = parsingDivs.get(0);
-            Element tbody = tableEle.children().get(1);
 
-            List<Dividend> dividends = new ArrayList<>();
-            for (Element e : tbody.children()) {
-                String text = e.text();
-                if (!text.endsWith("Dividend")) {
-                    continue;
-                }
-
-                String[] split = text.split(" ");
-                int month = Month.strToNumber(split[0]);
-                int day = Integer.parseInt(split[1].replace(",", ""));
-                int year = Integer.parseInt(split[2]);
-                String dividend = split[3];
-
-                if (month < 0) {
-                    log.error("Unexpected Month enum value -> {}", split[0]);
-                    throw new FailToScrapCompanyException();
-                }
-
-                dividends.add(new Dividend(
-                        LocalDateTime.of(year, month, day, 0, 0),
-                        dividend));
+            if (tableEle.children().isEmpty()) {
+                log.error("scrap company table children is empty");
+                throw new FailToScrapCompanyException();
             }
+
+            Element tbody = tableEle.children().get(1);
+            List<Dividend> dividends = getDividends(tbody);
 
             return new ScrapedResult(company, dividends);
         } catch (IOException e) {
@@ -70,18 +54,46 @@ public class YahooFinanceScraper implements Scraper {
         }
     }
 
+    private static List<Dividend> getDividends(Element tbody) {
+        List<Dividend> dividends = new ArrayList<>();
+
+        for (Element e : tbody.children()) {
+            String text = e.text();
+            if (!text.endsWith("Dividend")) {
+                continue;
+            }
+
+            String[] split = text.split(" ");
+            int month = Month.strToNumber(split[0]);
+            int day = Integer.parseInt(split[1].replace(",", ""));
+            int year = Integer.parseInt(split[2]);
+            String dividend = split[3];
+
+            if (month < 0) {
+                log.error("Unexpected Month enum value -> {}", split[0]);
+                throw new FailToScrapCompanyException();
+            }
+
+            dividends.add(new Dividend(
+                    LocalDateTime.of(year, month, day, 0, 0),
+                    dividend));
+        }
+        return dividends;
+    }
+
     @Override
     public Company scrapCompanyByTicker(String ticker) {
         String url = String.format(SUMMARY_URL, ticker, ticker);
 
         try {
             Document document = Jsoup.connect(url).get();
-            Elements h2 = document.getElementsByTag("h1");
-            if (h2.isEmpty()) {
+            Elements h1 = document.getElementsByTag("h1");
+
+            if (h1.isEmpty()) {
                 throw new InvalidTickerException();
             }
 
-            String name = h2.get(0).text()
+            String name = h1.get(0).text()
                     .replaceAll("\\(.*", "").trim();
 
             return new Company(ticker, name);

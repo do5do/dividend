@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @Slf4j
 @ControllerAdvice
 public class CustomExceptionHandler {
-
     @ExceptionHandler(AbstractException.class)
     protected ResponseEntity<?> handleCustomException(AbstractException e) {
         ErrorResponse errorResponse =

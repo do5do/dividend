@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
-import zerobase.dividend.exception.impl.AlreadyExistsTickerException;
+import zerobase.dividend.exception.impl.AlreadyExistTickerException;
 import zerobase.dividend.exception.impl.FailToScrapTickerException;
 import zerobase.dividend.exception.impl.NoCompanyException;
 import zerobase.dividend.model.Company;
@@ -31,7 +31,7 @@ public class CompanyService {
     @Transactional
     public Company save(String ticker) {
         if (companyRepository.existsByTicker(ticker)) {
-            throw new AlreadyExistsTickerException();
+            throw new AlreadyExistTickerException();
         }
         return storeCompanyAndDividend(ticker);
     }

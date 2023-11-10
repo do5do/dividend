@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zerobase.dividend.exception.impl.AlreadyExistUserException;
 import zerobase.dividend.exception.impl.NoUserException;
-import zerobase.dividend.exception.impl.UnMatchPassword;
+import zerobase.dividend.exception.impl.UnMatchPasswordException;
 import zerobase.dividend.model.Member;
 import zerobase.dividend.model.constant.Authority;
 import zerobase.dividend.persist.repository.MemberRepository;
@@ -60,7 +60,7 @@ public class MemberService implements UserDetailsService {
 
         if (!passwordEncoder.matches(signIn.password(),
                 memberEntity.getPassword())) {
-            throw new UnMatchPassword();
+            throw new UnMatchPasswordException();
         }
 
         return Member.fromEntity(memberEntity);
